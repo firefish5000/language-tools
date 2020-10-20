@@ -1,1 +1,0 @@
-<><SomeComponent attr={shorthand} /></>

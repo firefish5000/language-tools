@@ -1,1 +1,0 @@
-<input type="text" bind:value={test}/>
