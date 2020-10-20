@@ -7,6 +7,7 @@ import * as glob from 'glob';
 import * as argv from 'minimist';
 import * as path from 'path';
 import { SvelteCheck, SvelteCheckOptions } from 'svelte-language-server';
+import { loadConfig } from 'svelte-language-server/dist/src/lib/documents/configLoader';
 import { Diagnostic, DiagnosticSeverity } from 'vscode-languageserver-protocol';
 import { URI } from 'vscode-uri';
 import { HumanFriendlyWriter, MachineFriendlyWriter, Writer, DiagnosticFilter, DEFAULT_FILTER } from './writers';
@@ -14,6 +15,9 @@ import { watch } from 'chokidar';
 
 const outputFormats = ['human', 'human-verbose', 'machine'] as const;
 type OutputFormat = typeof outputFormats[number];
+
+//let config = loadConfig()
+let svelteGlob = '**/*.{svelte,svx}'
 
 type Result = {
     fileCount: number;
@@ -27,7 +31,7 @@ function openAllDocuments(
     filePathsToIgnore: string[],
     svelteCheck: SvelteCheck
 ) {
-    const files = glob.sync('**/*.svelte', {
+    const files = glob.sync(svelteGlob, {
         cwd: workspaceUri.fsPath,
         ignore: ['node_modules/**'].concat(filePathsToIgnore.map((ignore) => `${ignore}/**`))
     });
@@ -42,7 +46,7 @@ function openAllDocuments(
         });
     }
 }
-
+ 
 async function getDiagnostics(
     workspaceUri: URI,
     writer: Writer,
@@ -101,7 +105,7 @@ class DiagnosticsWatcher {
         private writer: Writer,
         filePathsToIgnore: string[]
     ) {
-        watch(`${workspaceUri.fsPath}/**/*.svelte`, {
+        watch(`${workspaceUri.fsPath}/${svelteGlob}`, {
             ignored: ['node_modules']
                 .concat(filePathsToIgnore)
                 .map((ignore) => path.join(workspaceUri.fsPath, ignore))

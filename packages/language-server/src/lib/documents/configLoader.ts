@@ -19,6 +19,7 @@ export interface SvelteConfig {
     compilerOptions?: CompileOptions;
     preprocess?: InternalPreprocessorGroup | InternalPreprocessorGroup[];
     loadConfigError?: any;
+    includeGlobs?: string[];
 }
 
 const DEFAULT_OPTIONS: CompileOptions = {
@@ -48,6 +49,7 @@ export function loadConfig(path: string): SvelteConfig {
             Logger.log('Found config at ', result.filepath);
         }
         return {
+            includeGlobs: ['**/*.svelte'],
             ...config,
             compilerOptions: { ...DEFAULT_OPTIONS, ...config.compilerOptions, ...NO_GENERATE }
         };
@@ -55,6 +57,7 @@ export function loadConfig(path: string): SvelteConfig {
         Logger.error('Error while loading config');
         Logger.error(err);
         return {
+            includeGlobs: ['**/*.svelte'],
             ...useFallbackPreprocessor(path, true),
             compilerOptions: {
                 ...DEFAULT_OPTIONS,
